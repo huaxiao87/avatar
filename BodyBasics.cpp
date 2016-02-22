@@ -657,9 +657,17 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
 	double palmY = thumbRightY - handRightY;
 	double palmZ = thumbRightZ - handRightZ;
 
+	//get the basis by using cross product
 	double directionVectorForThumbX = foreArmY*armZ - foreArmZ*armY;
 	double directionVectorForThumbY = foreArmZ*armX - foreArmX*armZ;
 	double directionVectorForThumbZ = foreArmX*armY - foreArmY*armX;
+
+	double secondDirectionVectorX = foreArmY*directionVectorForThumbZ - foreArmZ*directionVectorForThumbY;
+	double secondDirectionVectorY = foreArmZ*directionVectorForThumbX - foreArmX*directionVectorForThumbZ;
+	double secondDirectionVectorZ = foreArmX*directionVectorForThumbY - foreArmY*directionVectorForThumbX;
+
+	//get the projection on the plane spanned by the basis
+
 
 
 
