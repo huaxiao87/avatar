@@ -616,9 +616,9 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
             m_pRenderTarget->FillEllipse(ellipse, m_pBrushJointTracked);
         }
     }
-	double rightHandX = pJoints[JointType_HandRight].Position.X;
-	double rightHandY = pJoints[JointType_HandRight].Position.Y;
-	double rightHandZ = pJoints[JointType_HandRight].Position.Z;
+	double handRightX = pJoints[JointType_HandRight].Position.X;
+	double handRightY = pJoints[JointType_HandRight].Position.Y;
+	double handRightZ = pJoints[JointType_HandRight].Position.Z;
 
 	double rightShoulderX= pJoints[JointType_ShoulderRight].Position.X;
 	double rightShoulderY = pJoints[JointType_ShoulderRight].Position.Y;
@@ -634,9 +634,13 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
 	double ElbowRightY = pJoints[JointType_ElbowRight].Position.Y;
 	double ElbowRightZ = pJoints[JointType_ElbowRight].Position.Z;
 
-	double wristX = pJoints[JointType_WristRight].Position.X;
-	double wristY = pJoints[JointType_WristRight].Position.Y;
-	double wristZ = pJoints[JointType_WristRight].Position.Z;
+	double wristRightX = pJoints[JointType_WristRight].Position.X;
+	double wristRightY = pJoints[JointType_WristRight].Position.Y;
+	double wristRightZ = pJoints[JointType_WristRight].Position.Z;
+
+	double thumbRightX = pJoints[JointType_ThumbRight].Position.X;
+	double thumbRightY = pJoints[JointType_ThumbRight].Position.Y;
+	double thumbRightZ = pJoints[JointType_ThumbRight].Position.Z;
 
 	double spineX = SpineMidX - SpineShoulderX;
 	double spineY = SpineMidY - SpineShoulderY;
@@ -645,20 +649,28 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
 	double armY = rightShoulderY - ElbowRightY;
 	double armZ = rightShoulderZ - ElbowRightZ;
 
-	double foreArmX = wristX - ElbowRightX;
-	double foreArmY = wristY - ElbowRightY;
-	double foreArmZ = wristZ - ElbowRightY;
+	double foreArmX = wristRightX - ElbowRightX;
+	double foreArmY = wristRightY - ElbowRightY;
+	double foreArmZ = wristRightZ - ElbowRightZ;
+
+	double palmX = thumbRightX - handRightX;
+	double palmY = thumbRightY - handRightY;
+	double palmZ = thumbRightZ - handRightZ;
+
+	double directionVectorForThumbX = foreArmY*armZ - foreArmZ*armY;
+	double directionVectorForThumbY = foreArmZ*armX - foreArmX*armZ;
+	double directionVectorForThumbZ = foreArmX*armY - foreArmY*armX;
 
 
 
-	double AngleBasedOnShoulder = 180 / PI* acos((spineX*armX + spineY*armY) / (sqrt(spineX*spineX + spineY*spineY)*sqrt(armX*armX + armY*armY)));
-	double AngleBasedOnElbow = 180 / PI*acos((foreArmX*armX + foreArmY*armY + foreArmZ*armZ) / (sqrt(armX*armX + armY*armY + armZ*armZ)*sqrt(foreArmX*foreArmX + foreArmY*foreArmY + foreArmZ*foreArmZ)));
+	double angleBasedOnShoulder = 180 / PI* acos((spineX*armX + spineY*armY) / (sqrt(spineX*spineX + spineY*spineY)*sqrt(armX*armX + armY*armY)));
+	double angleBasedOnElbow = 180 / PI*acos((foreArmX*armX + foreArmY*armY + foreArmZ*armZ) / (sqrt(foreArmX*foreArmX + foreArmY*foreArmY + foreArmZ*foreArmZ) * sqrt(armX*armX + armY*armY + armZ*armZ)));
+	///double angleBasedOnWrist = 180 / PI*acos();
 
 
+	angle = atan2((handRightY - rightShoulderY) ,(handRightX - rightShoulderX));
 
-	angle = atan2((rightHandY - rightShoulderY) ,(rightHandX - rightShoulderX));
-
-	string tmp = to_string(AngleBasedOnShoulder)+" "+ to_string(AngleBasedOnElbow);
+	string tmp = to_string(angleBasedOnShoulder)+" "+ to_string(angleBasedOnElbow)+" ";
 	strcpy(message, tmp.c_str());
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
