@@ -149,5 +149,7 @@ private:
     /// <param name="joint0">one joint of the bone to draw</param>
     /// <param name="joint1">other joint of the bone to draw</param>
     void                    DrawBone(const Joint* pJoints, const D2D1_POINT_2F* pJointPoints, JointType joint0, JointType joint1);
+	double getNorm(float x, float y, float z);
+	double getInnerProduct(double x1, double y1, double z1, double x2, double y2, double z2);
 };
 

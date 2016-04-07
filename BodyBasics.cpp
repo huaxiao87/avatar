@@ -1,4 +1,4 @@
-
+﻿
 
 #include "stdafx.h"
 #include <strsafe.h>
@@ -362,6 +362,11 @@ HRESULT CBodyBasics::InitializeDefaultSensor()
 /// <param name="nBodyCount">body data count</param>
 /// <param name="ppBodies">body data in frame</param>
 /// </summary>
+double CBodyBasics::getNorm(float x, float y, float z)
+{
+	return x*x + y*y + z*z;
+}
+
 void CBodyBasics::ProcessBody(INT64 nTime, int nBodyCount, IBody** ppBodies)
 {
     if (m_hWnd)
@@ -653,9 +658,9 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
 	double foreArmY = wristRightY - ElbowRightY;
 	double foreArmZ = wristRightZ - ElbowRightZ;
 
-	double palmX = thumbRightX - handRightX;
-	double palmY = thumbRightY - handRightY;
-	double palmZ = thumbRightZ - handRightZ;
+	double palmX = thumbRightX - wristRightX;
+	double palmY = thumbRightY - wristRightY;
+	double palmZ = thumbRightZ - wristRightZ;
 
 	//get the basis by using cross product
 	double directionVectorForThumbX = foreArmY*armZ - foreArmZ*armY;
@@ -666,8 +671,18 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
 	double secondDirectionVectorY = foreArmZ*directionVectorForThumbX - foreArmX*directionVectorForThumbZ;
 	double secondDirectionVectorZ = foreArmX*directionVectorForThumbY - foreArmY*directionVectorForThumbX;
 
-	//get the projection on the plane spanned by the basis
+	//get the projection of the thumb on forearm
+	double normForearm = getNorm(foreArmX, foreArmY, foreArmZ);
+	
+	//normalize the forearm
+	foreArmX /= normForearm;
+	foreArmY /= normForearm;
+	foreArmZ /= normForearm;
 
+	double projectionOfPalmAndForehand = getInnerProduct(palmX, palmY, palmZ, foreArmX, foreArmY, foreArmZ)/ normForearm;
+	double thumbDirectionX = projectionOfPalmAndForehand*foreArmX;
+	double thumbDirectionY = projectionOfPalmAndForehand*foreArmY;
+	double thumbDirectionZ = projectionOfPalmAndForehand*foreArmZ;
 
 
 
@@ -688,6 +703,7 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
 		printf("sendto() failed with error code : %d", WSAGetLastError());
 		exit(EXIT_FAILURE);
 	}
+
 //
 //
 //	if (angle > -PI&&angle <= -57 * PI / 96.0 && currentState != 1)
@@ -791,3 +807,9 @@ void CBodyBasics::DrawHand(HandState handState, const D2D1_POINT_2F& handPositio
             break;
     }
 }
+double CBodyBasics::getInnerProduct(double x1, double y1, double z1, double x2, double y2, double z2)
+{
+	return x1*x2 + y1*y2 + z1*z2;
+}
+
+
